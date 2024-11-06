@@ -3,60 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Product</title>
+    <title>Products</title>
 </head>
 <body>
-    <h1>Add New Product</h1>
+    <h1>Products</h1>
+    <div id="productList"></div>
+    <button onclick="fetchProducts()">Load Products</button>
+
+    <h2>Upload Product</h2>
     <form id="productForm">
-        <label>
-            Name:
-            <input type="text" id="name" required>
-        </label>
-        <label>
-            Price:
-            <input type="number" id="price" required>
-        </label>
-        <label>
-            Description:
-            <textarea id="description" required></textarea>
-        </label>
-        <label>
-            Image URL:
-            <input type="text" id="image" required>
-        </label>
-        <button type="submit">Add Product</button>
+        <label for="name">Product Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" required step="0.01"><br><br>
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description" required></textarea><br><br>
+
+        <label for="image">Image URL:</label>
+        <input type="url" id="image" name="image" required><br><br>
+
+        <button type="button" onclick="uploadProduct()">Upload Product</button>
     </form>
 
     <script>
-        document.getElementById('productForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            
+        async function fetchProducts() {
+            try {
+                const response = await fetch('http://localhost:3000/products');
+                const products = await response.json();
+                displayProducts(products);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+            }
+        }
+
+        async function uploadProduct() {
             const product = {
                 name: document.getElementById('name').value,
                 price: parseFloat(document.getElementById('price').value),
                 description: document.getElementById('description').value,
                 image: document.getElementById('image').value
             };
-            
+
             try {
-                const response = await fetch('http://localhost:3000/add-product', {
+                const response = await fetch('http://localhost:3000/products', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(product)
                 });
-                
+
                 if (response.ok) {
-                    alert('Product added successfully!');
+                    alert('Product uploaded successfully!');
+                    fetchProducts(); // Refresh the product list
                 } else {
-                    alert('Failed to add product.');
+                    alert('Failed to upload product.');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while adding the product.');
+                console.error('Error uploading product:', error);
+                alert('An error occurred while uploading the product.');
             }
-        });
+        }
+
+        function displayProducts(products) {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = ''; // Clear existing products
+
+            if (products.length === 0) {
+                productList.innerHTML = '<p>No products available.</p>';
+                return;
+            }
+
+            products.forEach((product) => {
+                const productDiv = document.createElement('div');
+                productDiv.innerHTML = `
+                    <h3>${product.name}</h3>
+                    <p>Price: $${product.price.toFixed(2)}</p>
+                    <p>${product.description}</p>
+                    <img src="${product.image}" alt="${product.name}" style="width:150px;height:auto;">
+                `;
+                productList.appendChild(productDiv);
+            });
+        }
     </script>
 </body>
 </html>
