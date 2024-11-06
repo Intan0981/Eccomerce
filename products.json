@@ -5,6 +5,15 @@
         "description": "A modern and elegant chair for any room.",
         "image": "https://images.pexels.com/photos/276551/pexels-photo-276551.jpeg"
     },
+
+        {
+        "name": "Chair",
+        "price": 120.00,
+        "description": "A modern and elegant chair for any room.",
+        "image": "https://images.pexels.com/photos/276551/pexels-photo-276551.jpeg"
+    },
+
+    
     {
         "name": "Decorative Plant",
         "price": 35.00,
