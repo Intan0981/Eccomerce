@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>seller</title>
+    <link rel="stylesheet" href="chat.css">
+    
+</head>
+
+<body> 
+    <div class="chat-container">
+        <div class="chat-window">
+            <div id="messages" class="messages"><h1>Chat with Buyer!</h1> </div>
+        </div>
+        <input type="text" id="messageInput" placeholder="Type a message..." />
+        <button id="sendButton">Send</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+
+        // Function to send a message
+        sendButton.addEventListener('click', function() {
+            const messageText = messageInput.value;
+            if (messageText.trim() !== '') {
+                const messagesContainer = document.getElementById('messages');
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message person2';
+                messageElement.textContent = messageText;
+                messagesContainer.appendChild(messageElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll to the bottom
+                messageInput.value = ''; // Clear input
+                // Send message to person1
+                localStorage.setItem('person2Message', messageText);
+            }
+        });
+
+        // Listen for incoming messages from person1
+        setInterval(() => {
+            const incomingMessage = localStorage.getItem('person1Message');
+            if (incomingMessage) {
+                const messagesContainer = document.getElementById('messages');
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message person1';
+                messageElement.textContent = incomingMessage;
+                messagesContainer.appendChild(messageElement);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight; // Scroll to the bottom
+                localStorage.removeItem('person1Message'); // Clear message after receiving
+            }
+        }, 1000); // Check every second
+    </script>
+</body>
+</html>

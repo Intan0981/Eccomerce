@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Order Confirmed!</h1>
+        <p>Thank you for your purchase. Your order has been placed successfully.</p>
+        <h2>Order Summary</h2>
+        <div id="orderSummary"></div>
+        <a href="products.html">Continue Shopping</a>
+        <a href="orders.html">View Orders</a>
+    </div>
+
+    <script>
+        function displayOrderSummary() {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const lastOrder = orders[orders.length - 1];
+            const orderSummaryDiv = document.getElementById('orderSummary');
+
+            if (lastOrder) {
+                orderSummaryDiv.innerHTML = `
+                    <p><strong>Name:</strong> ${lastOrder.customerInfo.name}</p>
+                    <p><strong>Email:</strong> ${lastOrder.customerInfo.email}</p>
+                    <p><strong>Shipping Address:</strong> ${lastOrder.address}</p>
+                    <p><strong>Payment Method:</strong> ${lastOrder.paymentMethod}</p>
+                    <h3>Items:</h3>
+                `;
+
+                lastOrder.items.forEach(item => {
+                    orderSummaryDiv.innerHTML += `
+                        <div class="ordered-item">
+                            <h4>${item.name}</h4>
+                            <p>Price: $${item.price.toFixed(2)}</p>
+                            <p>Description: ${item.description}</p>
+                        </div>
+                    `;
+                });
+
+                orderSummaryDiv.innerHTML += `<h3>Total: $${lastOrder.total.toFixed(2)}</h3>`;
+            } else {
+                orderSummaryDiv.innerHTML = '<p>Order not found.</p>';
+            }
+        }
+
+        displayOrderSummary();
+    </script>
+</body>
+</html>

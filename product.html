@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Home&nbsp|</a>
+            <a href="cart.html">Cart&nbsp|</a>
+            <a href="orders.html">Orders&nbsp|</a>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div id="productDetails" class="product-details"></div>
+        <button id="addToCartBtn">Add to Cart</button>
+        <a id="viewReviewsLink" href="#">View Reviews</a>
+        <button id="chatWithSellerBtn">Chat with Seller</button>
+
+        <!-- Chat Interface -->
+        <div id="chatBox" class="chat-box" style="display: none;">
+            <h3>Chat with Seller</h3>
+            <div id="chatMessages" class="chat-messages"></div>
+            <input type="text" id="chatInput" placeholder="Type a message">
+            <button id="sendChatBtn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('productId');
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+
+        function displayProductDetails() {
+            const product = products[productId];
+            const productDetailsDiv = document.getElementById('productDetails');
+
+            if (!product) {
+                productDetailsDiv.innerHTML = '<p>Product not found.</p>';
+                return;
+            }
+
+            productDetailsDiv.innerHTML = `
+                <h2>${product.name}</h2>
+                <p>Price: $${product.price.toFixed(2)}</p>
+                <p>${product.description}</p>
+                <p><strong>Seller:</strong> ${product.seller}</p>
+                <img src="${product.image}" alt="${product.name}" style="width:300px;height:auto;">
+            `;
+
+            document.getElementById('viewReviewsLink').href = `review.html?productId=${productId}`;
+        }
+
+        document.getElementById('addToCartBtn').addEventListener('click', function() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const product = products[productId];
+            cart.push(product);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${product.name} has been added to your cart.`);
+        });
+
+        // Chat with Seller
+        const chatBox = document.getElementById('chatBox');
+        document.getElementById('chatWithSellerBtn').addEventListener('click', function() {
+            chatBox.style.display = chatBox.style.display === 'none' ? 'block' : 'none';
+        });
+
+        document.getElementById('sendChatBtn').addEventListener('click', function() {
+            const chatMessages = document.getElementById('chatMessages');
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+
+            if (message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'user-message';
+                messageDiv.textContent = `You: ${message}`;
+                chatMessages.appendChild(messageDiv);
+
+                // Simulate seller response
+                setTimeout(() => {
+                    const sellerResponse = document.createElement('div');
+                    sellerResponse.className = 'seller-message';
+                    sellerResponse.textContent = `Seller: Thank you for your message. I will get back to you soon.`;
+                    chatMessages.appendChild(sellerResponse);
+                }, 1000);
+
+                chatInput.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+
+        displayProductDetails();
+    </script>
+
+    <style>
+        .product-details {
+            margin-top: 20px;
+            text-align: center;
+        }
+        img {
+            margin-top: 10px;
+            max-width: 100%;
+            height: auto;
+        }
+        #addToCartBtn, #chatWithSellerBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        .chat-box {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .chat-messages {
+            height: 150px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        .user-message {
+            text-align: right;
+            color: blue;
+            margin-bottom: 5px;
+        }
+        .seller-message {
+            text-align: left;
+            color: green;
+            margin-bottom: 5px;
+        }
+        #chatInput {
+            width: calc(100% - 60px);
+            padding: 5px;
+            margin-right: 5px;
+        }
+        #sendChatBtn {
+            padding: 5px 10px;
+        }
+    </style>
+</body>
+</html>

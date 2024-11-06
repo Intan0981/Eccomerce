@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Chat buyer</h1>
+        <div id="chatBox" class="chat-box"></div>
+        <input type="text" id="messageInput" placeholder="Type your message..." />
+        <button id="sendMessageButton">Send</button>
+        <a href="products.html">Back to Products</a>
+    </div>
+
+    <script>
+        const productId = new URLSearchParams(window.location.search).get('productId'); // Get the product ID from the URL
+
+        function displayMessages() {
+            const messages = JSON.parse(localStorage.getItem(`chat_${productId}`)) || [];
+            const chatBox = document.getElementById('chatBox');
+            chatBox.innerHTML = '';
+
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = message.sender === 'buyer' ? 'message buyer' : 'message seller';
+                messageDiv.textContent = `${message.sender}: ${message.text}`;
+                chatBox.appendChild(messageDiv);
+            });
+
+            chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+        }
+
+        document.getElementById('sendMessageButton').addEventListener('click', () => {
+            const messageInput = document.getElementById('messageInput');
+            const messageText = messageInput.value;
+
+            if (messageText.trim() !== '') {
+                const messages = JSON.parse(localStorage.getItem(`chat_${productId}`)) || [];
+                messages.push({ sender: 'buyer', text: messageText });
+                localStorage.setItem(`chat_${productId}`, JSON.stringify(messages));
+                messageInput.value = ''; // Clear input
+                displayMessages(); // Refresh message display
+            }
+        });
+
+        displayMessages(); // Initial message display
+    </script>
+
+    <style>
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+        .chat-box {
+            border: 1px solid #ccc;
+            height: 400px;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .message {
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .buyer {
+            background-color: #e0f7fa; /* Light blue */
+            text-align: right;
+        }
+        .seller {
+            background-color: #f1f8e9; /* Light green */
+            text-align: left;
+        }
+    </style>
+</body>
+</html>

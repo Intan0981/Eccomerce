@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Review</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html">Home&nbsp|</a>
+            <a href="cart.html">Cart&nbsp|</a>
+            <a href="orders.html">Orders&nbsp|</a>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <h2 id="productName">Product Review</h2>
+        <div id="reviewsList" class="review-list"></div>
+
+        <h3>Add a Review</h3>
+        <form id="reviewForm">
+            <textarea id="reviewText" placeholder="Write your review here..." required></textarea>
+            <input type="submit" value="Submit Review">
+        </form>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('productId');
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+        const reviews = JSON.parse(localStorage.getItem('reviews')) || {};
+
+        function displayProduct() {
+            const product = products[productId];
+            if (product) {
+                document.getElementById('productName').textContent = `Reviews for ${product.name}`;
+            }
+        }
+
+        function displayReviews() {
+            const reviewsList = document.getElementById('reviewsList');
+            reviewsList.innerHTML = '';
+
+            const productReviews = reviews[productId] || [];
+            if (productReviews.length === 0) {
+                reviewsList.innerHTML = '<p>No reviews yet. Be the first to review this product!</p>';
+                return;
+            }
+
+            productReviews.forEach(review => {
+                const reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review';
+                reviewDiv.innerHTML = `<p>${review}</p>`;
+                reviewsList.appendChild(reviewDiv);
+            });
+        }
+
+        document.getElementById('reviewForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const reviewText = document.getElementById('reviewText').value;
+            if (reviewText.trim()) {
+                reviews[productId] = reviews[productId] || [];
+                reviews[productId].push(reviewText);
+                localStorage.setItem('reviews', JSON.stringify(reviews));
+
+                document.getElementById('reviewText').value = '';
+                displayReviews();
+            }
+        });
+
+        displayProduct();
+        displayReviews();
+    </script>
+
+    <style>
+        .review-list {
+            margin-top: 20px;
+        }
+        .review {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+    </style>
+</body>
+</html>

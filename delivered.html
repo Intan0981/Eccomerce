@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivered Orders</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Delivered Orders</h1>
+        <div id="deliveredOrderList" class="order-list"></div>
+        <a href="order_history.html">Back to Order History</a>
+    </div>
+
+    <script>
+        function displayDeliveredOrders() {
+            const deliveredOrders = JSON.parse(localStorage.getItem('deliveredOrders')) || [];
+            const deliveredOrderList = document.getElementById('deliveredOrderList');
+            deliveredOrderList.innerHTML = '';
+
+            if (deliveredOrders.length === 0) {
+                deliveredOrderList.innerHTML = '<p>No delivered orders found.</p>';
+                return;
+            }
+
+            deliveredOrders.forEach((order, index) => {
+                const orderDiv = document.createElement('div');
+                orderDiv.className = 'order';
+                orderDiv.innerHTML = `
+                    <h3>Order #${index + 1}</h3>
+                    <p>Customer Name: ${order.customerInfo.name}</p>
+                    <p>Customer Email: ${order.customerInfo.email}</p>
+                    <p>Shipping Address: ${order.address}</p>
+                    <p>Status: <strong>${order.status}</strong></p>
+                    <h4>Items:</h4>`;
+
+                order.items.forEach(item => {
+                    orderDiv.innerHTML += `
+                        <div class="ordered-item">
+                            <h5>${item.name}</h5>
+                            <p>Price: ₱${item.price.toFixed(2)}</p>
+                            <p>Description: ${item.description}</p>
+                            <img src="${item.image}" alt="${item.name}" style="width:100px;height:auto;">
+                        </div>`;
+                });
+
+                orderDiv.innerHTML += `
+                    <button onclick="downloadReceipt(${index})">Download Receipt</button>
+                    <button onclick="removeDeliveredOrder(${index})">Remove from Delivered</button>`;
+                
+                deliveredOrderList.appendChild(orderDiv);
+            });
+        }
+
+        function downloadReceipt(orderIndex) {
+            const deliveredOrders = JSON.parse(localStorage.getItem('deliveredOrders')) || [];
+            const order = deliveredOrders[orderIndex];
+
+            const receiptContent = `
+                Delivered Order Receipt
+                ------------------------
+                Order #${orderIndex + 1}
+                Customer Name: ${order.customerInfo.name}
+                Customer Email: ${order.customerInfo.email}
+                Shipping Address: ${order.address}
+                Status: ${order.status}
+                Items:
+            `;
+
+            order.items.forEach(item => {
+                receiptContent += `- ${item.name}: ₱${item.price.toFixed(2)}\n

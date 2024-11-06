@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Product</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Upload New Product</h1>
+        <form id="uploadForm">
+            <input type="text" id="productName" placeholder="Product Name" required>
+            <input type="number" id="productPrice" placeholder="Product Price" required>
+            <input type="text" id="productDescription" placeholder="Product Description" required>
+            <input type="text" id="productImage" placeholder="Image URL" required>
+            <button type="submit">Upload Product</button>
+        </form>
+        <button id="resetProducts">Reset All Products</button>
+        <a href="products.html">View Products</a>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('productName').value;
+            const price = parseFloat(document.getElementById('productPrice').value);
+            const description = document.getElementById('productDescription').value;
+            const image = document.getElementById('productImage').value;
+
+            const newProduct = {
+                id: Date.now(),
+                name,
+                price,
+                description,
+                image
+            };
+
+            const products = JSON.parse(localStorage.getItem('products')) || [];
+            products.push(newProduct);
+            localStorage.setItem('products', JSON.stringify(products));
+
+            alert('Product uploaded successfully!');
+            document.getElementById('uploadForm').reset();
+        });
+
+        document.getElementById('resetProducts').addEventListener('click', function() {
+            localStorage.removeItem('products');
+            alert('All products have been reset!');
+        });
+    </script>
+</body>
+</html>

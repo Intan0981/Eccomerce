@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Order Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Seller Order Management</h1>
+        <div id="orderList" class="order-list"></div>
+        <a href="products.html">View Products</a>
+        <a href="upload.html">Upload Product</a>
+    </div>
+
+    <script>
+        function displayOrders() {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const orderList = document.getElementById('orderList');
+            orderList.innerHTML = '';
+
+            if (orders.length === 0) {
+                orderList.innerHTML = '<p>No orders found.</p>';
+                return;
+            }
+
+            orders.forEach((order, index) => {
+                const orderDiv = document.createElement('div');
+                orderDiv.className = 'order';
+                orderDiv.innerHTML = `
+                    <h3>Order #${index + 1}</h3>
+                    <p>Customer Name: ${order.customerInfo.name}</p>
+                    <p>Customer Email: ${order.customerInfo.email}</p>
+                    <p>Shipping Address: ${order.address}</p>
+                    <p>Status: <strong id="status-${index}">${order.status}</strong></p>
+                    <h4>Items:</h4>`;
+
+                order.items.forEach(item => {
+                    orderDiv.innerHTML += `
+                        <div class="ordered-item">
+                            <h5>${item.name}</h5>
+                            <p>Price: $${item.price.toFixed(2)}</p>
+                            <p>Description: ${item.description}</p>
+                            <img src="${item.image}" alt="${item.name}" style="width:100px;height:auto;">
+                        </div>`;
+                });
+
+                // Add buttons to change status and remove order
+                orderDiv.innerHTML += `
+                    <button onclick="updateOrderStatus(${index}, 'Processing')">Mark as Processing</button>
+                    <button onclick="updateOrderStatus(${index}, 'To Deliver')">Mark as To Deliver</button>
+                    <button onclick="updateOrderStatus(${index}, 'Delivered')">Mark as Delivered</button>
+                    <button onclick="removeOrder(${index})">Remove</button>
+                `;
+
+                orderList.appendChild(orderDiv);
+            });
+        }
+
+        function updateOrderStatus(orderIndex, newStatus) {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            if (orders[orderIndex]) {
+                // Update the status
+                orders[orderIndex].status = newStatus;
+                localStorage.setItem('orders', JSON.stringify(orders));
+
+                // Update the displayed status
+                document.getElementById(`status-${orderIndex}`).innerText = newStatus;
+                alert(`Order #${orderIndex + 1} status updated to "${newStatus}"`);
+            } else {
+                alert('Order not found.');
+            }
+        }
+
+        function removeOrder(orderIndex) {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            if (orders[orderIndex]) {
+                // Remove the order
+                orders.splice(orderIndex, 1);
+                localStorage.setItem('orders', JSON.stringify(orders));
+
+                // Refresh the display
+                displayOrders();
+                alert(`Order #${orderIndex + 1} has been removed.`);
+            } else {
+                alert('Order not found.');
+            }
+        }
+
+        displayOrders(); // Initial display of orders
+    </script>
+</body>
+</html>

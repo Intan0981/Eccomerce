@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>        
+    
+    <header>
+        <nav>
+            <a href="upload.html">Upload Product&nbsp|</a>
+            <a href="cart.html">Cart&nbsp|</a>
+            <a href="orders.html">Orders&nbsp|</a>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <input type="text" id="searchInput" placeholder="Search products..." oninput="filterProducts()">
+        <div id="productList" class="product-list"></div>
+    </div>
+        
+    <script>
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+
+        function displayProducts(filteredProducts = products) {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = ''; // Clear existing products
+
+            if (filteredProducts.length === 0) {
+                productList.innerHTML = '<p>No products available.</p>';
+                return;
+            }
+
+            filteredProducts.forEach((product, index) => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+                productDiv.innerHTML = `
+                    <h3>${product.name}</h3>
+                    <p>Price: $${product.price.toFixed(2)}</p>
+                    <p>${product.description}</p>
+                    <img src="${product.image}" alt="${product.name}" style="width:150px;height:auto;">
+                    <a href="buyer.html?productId=${index}">Chat Seller</a>
+                    <button onclick="addToCart(${index})">Add to Cart</button>
+                `;
+                productList.appendChild(productDiv);
+            });
+        }
+
+        function addToCart(productIndex) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const product = products[productIndex];
+            cart.push(product);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            alert(`${product.name} has been added to your cart.`);
+        }
+
+        function filterProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filteredProducts = products.filter(product => 
+                product.name.toLowerCase().includes(query) || 
+                product.description.toLowerCase().includes(query)
+            );
+            displayProducts(filteredProducts);
+        }
+
+        displayProducts(); // Call function to display products
+    </script>
+
+    <style>
+        a {
+            color: white;
+        }
+        nav {
+            margin-top: -40px;
+            background: green;
+            position: fixed;
+            padding: 30px;
+            width: 400px;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            margin-top: 60px;
+        }
+        #searchInput {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .product {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            width: 200px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h3 {
+            margin: 0;
+        }
+        img {
+            width: 100%;
+            height: auto;
+            max-height: 150px;
+            object-fit: cover;
+        }
+    </style>
+</body>
+</html>

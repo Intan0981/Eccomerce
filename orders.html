@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Order History</h1>
+        <div id="orderList" class="order-list"></div>
+        <a href="products.html">View Products</a>
+        <a href="upload.html">Upload New Product</a>
+        <a href="cart.html">View Cart</a>
+        <a href="delivered_orders.html">View Delivered Orders</a>
+    </div>
+
+    <script>
+        function displayOrders() {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const orderList = document.getElementById('orderList');
+            orderList.innerHTML = '';
+
+            if (orders.length === 0) {
+                orderList.innerHTML = '<p>No orders found.</p>';
+                return;
+            }
+
+            orders.forEach((order, index) => {
+                const orderDiv = document.createElement('div');
+                orderDiv.className = 'order';
+                orderDiv.innerHTML = `
+                    <h3>Order #${index + 1}</h3>
+                    <p>Customer Name: ${order.customerInfo.name}</p>
+                    <p>Customer Email: ${order.customerInfo.email}</p>
+                    <p>Shipping Address: ${order.address}</p>
+                    <p>Status: <strong>${order.status}</strong></p>
+                    <h4>Items:</h4>`;
+
+                order.items.forEach(item => {
+                    orderDiv.innerHTML += `
+                        <div class="ordered-item">
+                            <h5>${item.name}</h5>
+                            <p>Price: ₱${item.price.toFixed(2)}</p>
+                            <p>Description: ${item.description}</p>
+                            <img src="${item.image}" alt="${item.name}" style="width:100px;height:auto;">
+                        </div>`;
+                });
+
+                if (order.status !== 'Delivered') {
+                    orderDiv.innerHTML += `
+                        <button onclick="downloadReceipt(${index})">Download Receipt</button>
+                        <button onclick="cancelOrder(${index})">Cancel Order</button>
+                        <button onclick="markAsDelivered(${index})">Mark as Delivered</button>`;
+                } else {
+                    orderDiv.innerHTML += `
+                        <button onclick="downloadReceipt(${index})">Download Receipt</button>
+                        <button onclick="removeDeliveredOrder(${index})">Remove from Delivered</button>`;
+                }
+                
+                orderList.appendChild(orderDiv);
+            });
+        }
+
+        function downloadReceipt(orderIndex) {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const order = orders[orderIndex];
+
+            const receiptContent = `
+                Order Receipt
+                ----------------
+                Order #${orderIndex + 1}
+                Customer Name: ${order.customerInfo.name}
+                Customer Email: ${order.customerInfo.email}
+                Shipping Address: ${order.address}
+                Status: ${order.status}
+                Items:
+            `;
+
+            order.items.forEach(item => {
+                receiptContent += `- ${item.name}: ₱${item.price.toFixed(2)}\n`;
+            });
+
+            const blob = new Blob([receiptContent], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Receipt_Order_${orderIndex + 1}.txt`;
+            link.click();
+        }
+
+        function cancelOrder(orderIndex) {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            orders[orderIndex].status = 'Canceled'; // Update the order status to "Canceled"
+            localStorage.setItem('orders', JSON.stringify(orders)); // Update local storage
+            displayOrders(); // Refresh the display
+            alert('Order canceled successfully.');
+        }
+
+        function markAsDelivered(orderIndex) {
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            const deliveredOrders = JSON.parse(localStorage.getItem('deliveredOrders')) || [];
+
+            // Update the order status to "Delivered"
+            orders[orderIndex].status = 'Delivered';
+
+            // Move the order to the delivered orders list
+            const deliveredOrder = orders.splice(orderIndex, 1)[0];
+            deliveredOrders.push(deliveredOrder);
+
+            // Save both lists back to localStorage
+            localStorage.setItem('orders', JSON.stringify(orders));
+            localStorage.setItem('deliveredOrders', JSON.stringify(deliveredOrders));
+
+            displayOrders(); // Refresh the order history page
+            alert('Order marked as delivered.');
+        }
+
+        function removeDeliveredOrder(orderIndex) {
+            const deliveredOrders = JSON.parse(localStorage.getItem('deliveredOrders')) || [];
+            deliveredOrders.splice(orderIndex, 1); // Remove the order from delivered orders
+            localStorage.setItem('deliveredOrders', JSON.stringify(deliveredOrders));
+            alert('Order removed from delivered list.');
+            window.location.href = 'order_history.html'; // Redirect back to the order history page
+        }
+
+        displayOrders(); // Initial display of orders
+    </script>
+</body>
+</html>

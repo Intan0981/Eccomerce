@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Cart</h1>
+        <div id="cartList" class="cart-list"></div>
+        <h3>Total: ₱<span id="totalPrice">0.00</span></h3>
+
+        <!-- Payment Method Section -->
+        <h2>Select Payment Method</h2>
+        <form id="paymentForm">
+            <div class="payment-option">
+                <label><input type="radio" name="paymentMethod" value="Cash on Delivery" required> Cash on Delivery (COD)</label>
+            </div>
+            <div class="payment-option">
+                <label><input type="radio" name="paymentMethod" value="Cash on Pickup"> Cash on Pickup (COP)</label>
+            </div>
+            <div class="payment-option">
+                <label><input type="radio" name="paymentMethod" value="GCash"> GCash</label>
+            </div>
+        </form>
+
+        <!-- GCash Payment Links Section -->
+        <div id="gcashLinks" style="display: none;">
+            <h3>GCash Payment Links</h3>
+            <p>Please use one of the following links to complete your GCash payment:</p>
+            <ul>
+                <li><a href="https://gcash.com" target="_blank">GCash Homepage</a></li>
+                <li><a href="https://www.gcash.com/help" target="_blank">GCash Help Center</a></li>
+                <li><a href="https://www.gcash.com/download" target="_blank">Download GCash App</a></li>
+            </ul>
+        </div>
+
+        <!-- Checkout Buttons -->
+        <button onclick="proceedToPayment()">Proceed to Payment</button>
+        <button onclick="resetCart()">Reset Cart</button>
+        <a href="products.html">Continue Shopping</a>
+    </div>
+
+    <script>
+        function displayCart() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartList = document.getElementById('cartList');
+            let totalPrice = 0;
+
+            cartList.innerHTML = ''; // Clear existing cart items
+
+            if (cart.length === 0) {
+                cartList.innerHTML = '<p>Your cart is empty.</p>';
+                document.getElementById('totalPrice').innerText = '0.00';
+                return;
+            }
+
+            cart.forEach((product, index) => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'cart-item';
+                productDiv.innerHTML = `
+                    <h3>${product.name}</h3>
+                    <p>Price: ₱${product.price.toFixed(2)}</p>
+                    <label>Quantity: 
+                        <input type="number" value="${product.quantity}" min="1" onchange="updateQuantity(${index}, this.value)">
+                    </label>
+                    <button onclick="removeFromCart(${index})">Remove</button>
+                `;
+                cartList.appendChild(productDiv);
+                totalPrice += product.price * product.quantity; // Calculate total with quantity
+            });
+
+            document.getElementById('totalPrice').innerText = totalPrice.toFixed(2);
+        }
+
+        function updateQuantity(productIndex, quantity) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (productIndex > -1) {
+                cart[productIndex].quantity = parseInt(quantity); // Update quantity
+                localStorage.setItem('cart', JSON.stringify(cart));
+                displayCart(); // Update the cart display immediately
+            }
+        }
+
+        function removeFromCart(productIndex) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (productIndex > -1) {
+                cart.splice(productIndex, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                displayCart(); // Update the cart display immediately
+            }
+        }
+
+        function proceedToPayment() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+
+            if (cart.length === 0) {
+                alert('Your cart is empty. Please add items before checking out.');
+                return;
+            }
+
+            if (!paymentMethod) {
+                alert('Please select a payment method.');
+                return;
+            }
+
+            if (paymentMethod.value === 'GCash') {
+                document.getElementById('gcashLinks').style.display = 'block';
+                alert('Please follow the links above to complete your GCash payment.');
+                return; // Stop further processing if GCash is selected
+            }
+
+            const customerInfo = {
+                name: prompt("Enter your name:"),
+                email: prompt("Enter your email:")
+            };
+
+            const order = {
+                items: cart,
+                total: parseFloat(document.getElementById('totalPrice').innerText),
+                paymentMethod: paymentMethod.value,
+                customerInfo: customerInfo,
+                address: prompt("Enter your shipping address:"),
+                status: "Pending"
+            };
+
+            // Save the order temporarily in sessionStorage
+            sessionStorage.setItem('currentOrder', JSON.stringify(order));
+            
+            // Redirect to payment processing page
+            window.location.href = 'payment_processing.html';
+        }
+
+        function resetCart() {
+            // Clear the cart from localStorage
+            localStorage.removeItem('cart');
+            // Refresh the cart display
+            displayCart();
+            alert('Your cart has been reset.');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            displayCart(); // Initial load of cart items
+        });
+    </script>
+</body>
+</html>
