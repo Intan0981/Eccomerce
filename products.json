@@ -1,63 +1,32 @@
 [
     {
-        "name": "Wireless Earbuds",
-        "price": 29.99,
-        "description": "High-quality wireless earbuds with noise cancellation.",
-        "image": "https://via.placeholder.com/150"
+        "name": "Elegant Chair",
+        "price": 120.00,
+        "description": "A modern and elegant chair for any room.",
+        "image": "https://images.pexels.com/photos/276551/pexels-photo-276551.jpeg"
     },
     {
-        "name": "Smartphone",
-        "price": 699.99,
-        "description": "Latest smartphone with stunning display and camera.",
-        "image": "https://via.placeholder.com/150"
+        "name": "Decorative Plant",
+        "price": 35.00,
+        "description": "A beautiful plant for interior decoration.",
+        "image": "https://images.pexels.com/photos/4505166/pexels-photo-4505166.jpeg"
     },
     {
-        "name": "Laptop",
-        "price": 899.99,
-        "description": "Lightweight laptop with long battery life.",
-        "image": "https://via.placeholder.com/150"
+        "name": "Wireless Mouse",
+        "price": 25.00,
+        "description": "Ergonomic and wireless mouse, perfect for work and gaming.",
+        "image": "https://images.pexels.com/photos/1054397/pexels-photo-1054397.jpeg"
     },
     {
-        "name": "Gaming Console",
-        "price": 399.99,
-        "description": "Experience high-definition gaming with this powerful console.",
-        "image": "https://via.placeholder.com/150"
-    },
-    {
-        "name": "4K TV",
-        "price": 499.99,
-        "description": "Smart TV with 4K resolution and streaming capabilities.",
-        "image": "https://via.placeholder.com/150"
-    },
-    {
-        "name": "Smartwatch",
-        "price": 199.99,
-        "description": "Track your fitness and receive notifications on the go.",
-        "image": "https://via.placeholder.com/150"
-    },
-    {
-        "name": "Bluetooth Speaker",
-        "price": 49.99,
-        "description": "Portable speaker with rich sound quality.",
-        "image": "https://via.placeholder.com/150"
-    },
-    {
-        "name": "Electric Toothbrush",
-        "price": 39.99,
-        "description": "Advanced electric toothbrush with multiple cleaning modes.",
-        "image": "https://via.placeholder.com/150"
-    },
-    {
-        "name": "Drone",
-        "price": 299.99,
-        "description": "Capture stunning aerial photos and videos.",
-        "image": "https://via.placeholder.com/150"
+        "name": "Smart LED Bulb",
+        "price": 15.99,
+        "description": "Control your lighting with a smart LED bulb.",
+        "image": "https://images.pexels.com/photos/7194659/pexels-photo-7194659.jpeg"
     },
     {
         "name": "Fitness Tracker",
-        "price": 59.99,
-        "description": "Monitor your activity and health statistics.",
-        "image": "https://via.placeholder.com/150"
+        "price": 99.99,
+        "description": "Track your health metrics with this fitness tracker.",
+        "image": "https://images.pexels.com/photos/4370322/pexels-photo-4370322.jpeg"
     }
-    // Add more products as per this format to make a total of 100 products
 ]
