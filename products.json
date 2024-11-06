@@ -1,0 +1,63 @@
+[
+    {
+        "name": "Wireless Earbuds",
+        "price": 29.99,
+        "description": "High-quality wireless earbuds with noise cancellation.",
+        "image": "https://via.placeholder.com/150"
+    },
+    {
+        "name": "Smartphone",
+        "price": 699.99,
+        "description": "Latest smartphone with stunning display and camera.",
+        "image": "https://via.placeholder.com/150"
+    },
+    {
+        "name": "Laptop",
+        "price": 899.99,
+        "description": "Lightweight laptop with long battery life.",
+        "image": "https://via.placeholder.com/150"
+    },
+    {
+        "name": "Gaming Console",
+        "price": 399.99,
+        "description": "Experience high-definition gaming with this powerful console.",
+        "image": "https://via.placeholder.com/150"
+    },
+    {
+        "name": "4K TV",
+        "price": 499.99,
+        "description": "Smart TV with 4K resolution and streaming capabilities.",
+        "image": "https://via.placeholder.com/150"
+    },
+    {
+        "name": "Smartwatch",
+        "price": 199.99,
+        "description": "Track your fitness and receive notifications on the go.",
+        "image": "https://via.placeholder.com/150"
+    },
+    {
+        "name": "Bluetooth Speaker",
+        "price": 49.99,
+        "description": "Portable speaker with rich sound quality.",
+        "image": "https://via.placeholder.com/150"
+    },
+    {
+        "name": "Electric Toothbrush",
+        "price": 39.99,
+        "description": "Advanced electric toothbrush with multiple cleaning modes.",
+        "image": "https://via.placeholder.com/150"
+    },
+    {
+        "name": "Drone",
+        "price": 299.99,
+        "description": "Capture stunning aerial photos and videos.",
+        "image": "https://via.placeholder.com/150"
+    },
+    {
+        "name": "Fitness Tracker",
+        "price": 59.99,
+        "description": "Monitor your activity and health statistics.",
+        "image": "https://via.placeholder.com/150"
+    }
+    // Add more products as per this format to make a total of 100 products
+]
