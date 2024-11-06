@@ -1,32 +1,31 @@
 [
     {
-        "name": "Elegant Chair",
-        "price": 120.00,
-        "description": "A modern and elegant chair for any room.",
-        "image": "https://images.pexels.com/photos/276551/pexels-photo-276551.jpeg"
+        "name": "Stylish Sneakers",
+        "price": 59.99,
+        "description": "Comfortable and stylish sneakers for everyday wear.",
+        "image": "https://images.unsplash.com/photo-1517524206127-48bbd363f3a3"
     },
     {
-        "name": "Decorative Plant",
-        "price": 35.00,
-        "description": "A beautiful plant for interior decoration.",
-        "image": "https://images.pexels.com/photos/4505166/pexels-photo-4505166.jpeg"
+        "name": "Classic Wristwatch",
+        "price": 149.99,
+        "description": "A timeless wristwatch with a leather band.",
+        "image": "https://images.unsplash.com/photo-1519666213637-2d5d40b1e043"
     },
     {
-        "name": "Wireless Mouse",
-        "price": 25.00,
-        "description": "Ergonomic and wireless mouse, perfect for work and gaming.",
-        "image": "https://images.pexels.com/photos/1054397/pexels-photo-1054397.jpeg"
+        "name": "Eco-Friendly Water Bottle",
+        "price": 19.99,
+        "description": "Reusable water bottle made from sustainable materials.",
+        "image": "https://images.unsplash.com/photo-1564866657314-933c1e241037"
     },
     {
-        "name": "Smart LED Bulb",
-        "price": 15.99,
-        "description": "Control your lighting with a smart LED bulb.",
-        "image": "https://images.pexels.com/photos/7194659/pexels-photo-7194659.jpeg"
+        "name": "Bluetooth Headphones",
+        "price": 89.99,
+        "description": "Noise-canceling headphones with high-quality sound.",
+        "image": "https://images.unsplash.com/photo-1581291519195-ef11498d1cf4"
     },
     {
-        "name": "Fitness Tracker",
-        "price": 99.99,
-        "description": "Track your health metrics with this fitness tracker.",
-        "image": "https://images.pexels.com/photos/4370322/pexels-photo-4370322.jpeg"
+        "name": "Minimalist Backpack",
+        "price": 74.99,
+        "description": "Stylish and spacious backpack with minimalist design.",
+        "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff"
     }
-]
