@@ -21,53 +21,73 @@
         <div id="productList" class="product-list"></div>
     </div>
         
-    <script>
-        const products = JSON.parse(localStorage.getItem('products')) || [];
+<script>
+    const PRODUCTS_URL = 'https://raw.githubusercontent.com/username/repository/main/products.json'; // Replace with your GitHub URL
 
-        function displayProducts(filteredProducts = products) {
-            const productList = document.getElementById('productList');
-            productList.innerHTML = ''; // Clear existing products
+    async function fetchProducts() {
+        try {
+            const response = await fetch(PRODUCTS_URL);
+            if (!response.ok) throw new Error('Failed to load products.');
+            const products = await response.json();
+            displayProducts(products);
+        } catch (error) {
+            console.error(error);
+            document.getElementById('productList').innerHTML = '<p>Failed to load products.</p>';
+        }
+    }
 
-            if (filteredProducts.length === 0) {
-                productList.innerHTML = '<p>No products available.</p>';
-                return;
-            }
+    function displayProducts(filteredProducts) {
+        const productList = document.getElementById('productList');
+        productList.innerHTML = ''; // Clear existing products
 
-            filteredProducts.forEach((product, index) => {
-                const productDiv = document.createElement('div');
-                productDiv.className = 'product';
-                productDiv.innerHTML = `
-                    <h3><a href="product.html?productId=${index}">${product.name}</a></h3>
-                    <p>Price: $${product.price.toFixed(2)}</p>
-                    <p>${product.description}</p>
-                    <img src="${product.image}" alt="${product.name}" style="width:150px;height:auto;">
-                    <a href="buyer.html?productId=${index}">Chat Seller</a>
-                    <a href="review.html?productId=${index}">View Reviews</a>
-                    <button onclick="addToCart(${index})">Add to Cart</button>
-                `;
-                productList.appendChild(productDiv);
+        if (filteredProducts.length === 0) {
+            productList.innerHTML = '<p>No products available.</p>';
+            return;
+        }
+
+        filteredProducts.forEach((product, index) => {
+            const productDiv = document.createElement('div');
+            productDiv.className = 'product';
+            productDiv.innerHTML = `
+                <h3><a href="product.html?productId=${index}">${product.name}</a></h3>
+                <p>Price: $${product.price.toFixed(2)}</p>
+                <p>${product.description}</p>
+                <img src="${product.image}" alt="${product.name}" style="width:150px;height:auto;">
+                <a href="buyer.html?productId=${index}">Chat Seller</a>
+                <a href="review.html?productId=${index}">View Reviews</a>
+                <button onclick="addToCart(${index})">Add to Cart</button>
+            `;
+            productList.appendChild(productDiv);
+        });
+    }
+
+    function addToCart(productIndex) {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        fetch(PRODUCTS_URL)
+            .then(response => response.json())
+            .then(products => {
+                const product = products[productIndex];
+                cart.push(product);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                alert(`${product.name} has been added to your cart.`);
             });
-        }
+    }
 
-        function addToCart(productIndex) {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const product = products[productIndex];
-            cart.push(product);
-            localStorage.setItem('cart', JSON.stringify(cart));
-            alert(`${product.name} has been added to your cart.`);
-        }
+    function filterProducts() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        fetch(PRODUCTS_URL)
+            .then(response => response.json())
+            .then(products => {
+                const filteredProducts = products.filter(product => 
+                    product.name.toLowerCase().includes(query) || 
+                    product.description.toLowerCase().includes(query)
+                );
+                displayProducts(filteredProducts);
+            });
+    }
 
-        function filterProducts() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filteredProducts = products.filter(product => 
-                product.name.toLowerCase().includes(query) || 
-                product.description.toLowerCase().includes(query)
-            );
-            displayProducts(filteredProducts);
-        }
-
-        displayProducts(); // Call function to display products
-    </script>
+    fetchProducts(); // Call function to fetch and display products
+</script>
 
     <style>
         a {
