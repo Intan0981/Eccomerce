@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product</title>
+</head>
+<body>
+    <h1>Add New Product</h1>
+    <form id="productForm">
+        <label>
+            Name:
+            <input type="text" id="name" required>
+        </label>
+        <label>
+            Price:
+            <input type="number" id="price" required>
+        </label>
+        <label>
+            Description:
+            <textarea id="description" required></textarea>
+        </label>
+        <label>
+            Image URL:
+            <input type="text" id="image" required>
+        </label>
+        <button type="submit">Add Product</button>
+    </form>
+
+    <script>
+        document.getElementById('productForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const product = {
+                name: document.getElementById('name').value,
+                price: parseFloat(document.getElementById('price').value),
+                description: document.getElementById('description').value,
+                image: document.getElementById('image').value
+            };
+            
+            try {
+                const response = await fetch('http://localhost:3000/add-product', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(product)
+                });
+                
+                if (response.ok) {
+                    alert('Product added successfully!');
+                } else {
+                    alert('Failed to add product.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while adding the product.');
+            }
+        });
+    </script>
+</body>
+</html>
