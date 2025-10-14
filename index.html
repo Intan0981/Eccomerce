@@ -1,10 +1,180 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Add Shop Item</title>
+<style>
+    body { font-family: Arial; margin: 20px; }
+    .item-card {
+        display: inline-block;
+        width: 260px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 10px;
+        margin: 10px;
+        text-align: center;
+        vertical-align: top;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        position: relative;
+    }
+    .item-card img {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+    input, textarea, select, button {
+        width: 90%;
+        margin: 5px 0;
+        padding: 6px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+    }
+    .remove-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: red;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        width: 25px;
+        height: 25px;
+    }
+    .copy-btns {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+    }
+    .copy-btns button {
+        width: 48%;
+        background: #f0f0f0;
+        border: 1px solid #bbb;
+        cursor: pointer;
+    }
+</style>
+</head>
 <body>
+<h2>Add Shop Items</h2>
 
-  
-  <a href="https://l.facebook.com/l.php?u=https%3A%2F%2Fi.postimg.cc%2FYSnXgsX5%2Finbound3093301671489543450.jpg&h=AT2JlBFkgcIJgTvhsrVJCgxU2vyDd5ySbRyAtzJe8Q3301CMYhs2e_mei4FcNws5HL8t0CWQzdoJqh10urOX7djsrhEL0hwHM3mWVyOr38_pb2CjCWh_8kP4yD5m4ec&s=1">
-</a>
+<form id="itemForm" action="save_item.php" method="POST" enctype="multipart/form-data">
+    <label><b>Shop name:</b></label><br>
+    <input type="text" name="shop_name" required><br><br>
 
+    <label><b>Select item photos (can add more anytime):</b></label><br>
+    <!-- Multiple selection enabled -->
+    <input type="file" id="photoInput" name="item_photos[]" accept="image/*" multiple><br><br>
 
+    <button type="button" id="openCamera">📷 Open Camera</button>
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"><br><br>
+
+    <div id="previewContainer"></div>
+
+    <input type="submit" value="Save All Items">
+</form>
+
+<script>
+let copiedData = {};
+const photoInput = document.getElementById('photoInput');
+const cameraInput = document.getElementById('cameraInput');
+const previewContainer = document.getElementById('previewContainer');
+const openCamera = document.getElementById('openCamera');
+
+let allFiles = [];
+
+// Renders the photo cards
+function renderCards() {
+    previewContainer.innerHTML = '';
+    allFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const card = document.createElement('div');
+            card.classList.add('item-card');
+            card.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeItem(${index})">×</button>
+                <img src="${e.target.result}" alt="Preview">
+                <input type="hidden" name="file_index[]" value="${index}">
+                <input type="text" name="item_names[]" placeholder="Item name" required>
+                <input type="text" name="item_colors[]" placeholder="Color">
+                <input type="text" name="item_sizes[]" placeholder="Size">
+                <input type="number" name="item_prices[]" placeholder="Price" required>
+                <input type="number" name="item_discount_prices[]" placeholder="Discount price (optional)">
+                <input type="text" name="item_links[]" placeholder="Item link (optional)">
+                <select name="item_category[]">
+                    <option value="">Select Category</option>
+                    <option>Clothing</option>
+                    <option>Accessories</option>
+                    <option>Electronics</option>
+                    <option>Home & Living</option>
+                    <option>Beauty</option>
+                    <option>Others</option>
+                </select>
+                <input type="text" name="item_sku[]" placeholder="SKU / Item code">
+                <input type="number" name="item_stock[]" placeholder="Stock quantity" min="0">
+                <select name="item_status[]">
+                    <option value="Available">Available</option>
+                    <option value="Out of Stock">Out of Stock</option>
+                    <option value="Archived">Archived</option>
+                </select>
+                <textarea name="item_descriptions[]" placeholder="Description"></textarea>
+                <div class="copy-btns">
+                    <button type="button" onclick="copyDetails(this)">Copy</button>
+                    <button type="button" onclick="pasteDetails(this)">Paste</button>
+                </div>
+            `;
+            previewContainer.appendChild(card);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+// Choose multiple files
+photoInput.addEventListener('change', function() {
+    const newFiles = Array.from(this.files);
+    allFiles = allFiles.concat(newFiles);
+    renderCards();
+});
+
+// Capture from camera
+openCamera.addEventListener('click', () => cameraInput.click());
+cameraInput.addEventListener('change', function() {
+    const newFiles = Array.from(this.files);
+    allFiles = allFiles.concat(newFiles);
+    renderCards();
+});
+
+// Remove item
+function removeItem(index) {
+    allFiles.splice(index, 1);
+    renderCards();
+}
+
+// Copy / Paste details
+function copyDetails(button) {
+    const card = button.closest('.item-card');
+    copiedData = {};
+    card.querySelectorAll('input, select, textarea').forEach(input => {
+        if (input.name && input.type !== 'hidden') copiedData[input.name] = input.value;
+    });
+    alert('Item details copied!');
+}
+
+function pasteDetails(button) {
+    if (!Object.keys(copiedData).length) return alert('No data copied!');
+    const card = button.closest('.item-card');
+    card.querySelectorAll('input, select, textarea').forEach(input => {
+        if (copiedData[input.name] !== undefined) input.value = copiedData[input.name];
+    });
+    alert('Item details pasted!');
+}
+
+// Include all files in form submit
+document.getElementById('itemForm').addEventListener('submit', e => {
+    const dataTransfer = new DataTransfer();
+    allFiles.forEach(f => dataTransfer.items.add(f));
+    photoInput.files = dataTransfer.files;
+});
+</script>
 </body>
-  </html>
+</html>
