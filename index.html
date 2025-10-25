@@ -1,180 +1,190 @@
-<!DOCTYPE html>
+<!doctype html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Add Shop Item</title>
-<style>
-    body { font-family: Arial; margin: 20px; }
-    .item-card {
-        display: inline-block;
-        width: 260px;
-        border: 1px solid #ccc;
-        border-radius: 10px;
-        padding: 10px;
-        margin: 10px;
-        text-align: center;
-        vertical-align: top;
-        box-shadow: 0 0 5px rgba(0,0,0,0.1);
-        position: relative;
-    }
-    .item-card img {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-        border-radius: 6px;
-    }
-    input, textarea, select, button {
-        width: 90%;
-        margin: 5px 0;
-        padding: 6px;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-    }
-    .remove-btn {
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        background: red;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        width: 25px;
-        height: 25px;
-    }
-    .copy-btns {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 5px;
-    }
-    .copy-btns button {
-        width: 48%;
-        background: #f0f0f0;
-        border: 1px solid #bbb;
-        cursor: pointer;
-    }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Daily Landscaping / Ground Maintenance Report (Editable)</title>
+  <style>
+    :root{--accent:#2f855a;--muted:#6b7280}
+    body{font-family:Inter, system-ui, -apple-system, Roboto, 'Segoe UI', Arial; padding:18px; background:#f7faf7}
+    h1{margin:0 0 12px; font-size:20px}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+    button{background:var(--accent);color:#fff;border:0;padding:8px 10px;border-radius:8px;cursor:pointer}
+    button.ghost{background:#fff;color:var(--accent);border:1px solid #c6f6d5}
+    button.warn{background:#dd6b20}
+    .actions{margin-left:auto;display:flex;gap:8px}
+    .wrap{background:#fff;padding:14px;border-radius:10px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th, td{border:1px solid #e6edf0;padding:8px;vertical-align:middle}
+    th{background:#f0fff4;color:#065f46;font-weight:600;position:relative}
+    th .col-actions{position:absolute;right:6px;top:6px;display:flex;gap:4px}
+    th .col-actions button{padding:4px 6px;border-radius:6px;font-size:12px}
+    td{min-width:80px}
+    td[contenteditable]{outline:none}
+    .small{font-size:12px;color:var(--muted)}
+    .center{display:flex;align-items:center;gap:8px}
+    .hint{margin-top:10px;color:var(--muted);font-size:13px}
+    @media (max-width:800px){th,td{font-size:12px;padding:6px}}
+    @media print{@page {size: landscape;margin: 10mm;} table{page-break-inside: avoid;}}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
-<h2>Add Shop Items</h2>
+  <h1>Daily Landscaping / Ground Maintenance Report — Editable</h1>
+  <div class="toolbar">
+    <button id="addRowBtn">+ Add Row</button>
+    <button id="addColBtn">+ Add Column</button>
+    <button id="deleteColBtn" class="ghost">Delete Column</button>
+    <div class="actions">
+      <button id="exportCsvBtn" class="ghost">Export CSV</button>
+      <button id="printBtn" class="ghost">Print / Save PDF</button>
+      <button id="saveImgBtn" class="ghost">Save as Picture</button>
+      <button id="resetBtn" class="warn">Reset Sample</button>
+    </div>
+  </div>  <div class="wrap" id="reportDiv">
+    <table id="reportTable">
+      <thead>
+        <tr id="headerRow">
+          <th>Date <span class="small">(yyyy-mm-dd)</span></th>
+          <th>Team Members Present</th>
+          <th>Work Location / Area</th>
+          <th>Tasks Completed</th>
+          <th>Materials Used</th>
+          <th>Equipment Used</th>
+          <th>Issues / Problems</th>
+          <th>Safety Concerns</th>
+          <th>Plans for Tomorrow</th>
+          <th>Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true">None</td>
+          <td contenteditable="true"></td>
+          <td contenteditable="true"></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="hint">Tip: Click any cell to edit. Use <strong>Add Column</strong> to insert new data fields (headers).</div>
+  </div>  <script>
+    const table = document.getElementById('reportTable');
+    const thead = table.querySelector('thead');
+    const tbody = table.querySelector('tbody');
 
-<form id="itemForm" action="save_item.php" method="POST" enctype="multipart/form-data">
-    <label><b>Shop name:</b></label><br>
-    <input type="text" name="shop_name" required><br><br>
+    function addRow(withSample=false){
+      const colCount = table.querySelectorAll('thead th').length;
+      const tr = document.createElement('tr');
+      for(let i=0;i<colCount;i++){
+        const td = document.createElement('td');
+        td.contentEditable = true;
+        td.innerText = withSample ? (i===0? new Date().toISOString().slice(0,10): '') : '';
+        tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+      saveToLocal();
+    }
 
-    <label><b>Select item photos (can add more anytime):</b></label><br>
-    <!-- Multiple selection enabled -->
-    <input type="file" id="photoInput" name="item_photos[]" accept="image/*" multiple><br><br>
+    function addColumn(name){
+      const th = document.createElement('th');
+      th.innerHTML = name || 'New Column';
+      thead.querySelector('tr').appendChild(th);
+      tbody.querySelectorAll('tr').forEach(r=>{
+        const td = document.createElement('td');
+        td.contentEditable = true;
+        r.appendChild(td);
+      });
+      attachHeaderControls();
+      saveToLocal();
+    }
 
-    <button type="button" id="openCamera">📷 Open Camera</button>
-    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none"><br><br>
+    function deleteLastColumn(){
+      const headers = thead.querySelectorAll('th');
+      if(headers.length<=1) return alert('At least one column must remain.');
+      if(!confirm('Delete last column "'+headers[headers.length-1].innerText+'"?')) return;
+      headers[headers.length-1].remove();
+      tbody.querySelectorAll('tr').forEach(r=> r.lastElementChild.remove());
+      saveToLocal();
+    }
 
-    <div id="previewContainer"></div>
+    function exportCSV(){
+      const rows = [];
+      const headers = [...thead.querySelectorAll('th')].map(h=> '"'+h.innerText.replace(/"/g,'""')+'"');
+      rows.push(headers.join(','));
+      tbody.querySelectorAll('tr').forEach(tr=>{
+        const vals = [...tr.children].map(td=> '"'+(td.innerText||'').replace(/"/g,'""')+'"');
+        rows.push(vals.join(','));
+      });
+      const csv = rows.join('\n');
+      const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'Daily_Landscaping_Report.csv';
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
 
-    <input type="submit" value="Save All Items">
-</form>
+    function printPDF(){ window.print(); }
 
-<script>
-let copiedData = {};
-const photoInput = document.getElementById('photoInput');
-const cameraInput = document.getElementById('cameraInput');
-const previewContainer = document.getElementById('previewContainer');
-const openCamera = document.getElementById('openCamera');
+    async function saveAsImage(){
+      const table = document.getElementById('reportTable');
+      const canvas = await html2canvas(table, {
+        scale: 2,
+        width: table.scrollWidth,
+        height: table.scrollHeight,
+        windowWidth: document.documentElement.scrollWidth,
+        windowHeight: document.documentElement.scrollHeight
+      });
+      const link = document.createElement('a');
+      link.download = 'Daily_Landscaping_Report.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
 
-let allFiles = [];
+    function saveToLocal(){ localStorage.setItem('landscape_report_html', table.outerHTML); }
 
-// Renders the photo cards
-function renderCards() {
-    previewContainer.innerHTML = '';
-    allFiles.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const card = document.createElement('div');
-            card.classList.add('item-card');
-            card.innerHTML = `
-                <button type="button" class="remove-btn" onclick="removeItem(${index})">×</button>
-                <img src="${e.target.result}" alt="Preview">
-                <input type="hidden" name="file_index[]" value="${index}">
-                <input type="text" name="item_names[]" placeholder="Item name" required>
-                <input type="text" name="item_colors[]" placeholder="Color">
-                <input type="text" name="item_sizes[]" placeholder="Size">
-                <input type="number" name="item_prices[]" placeholder="Price" required>
-                <input type="number" name="item_discount_prices[]" placeholder="Discount price (optional)">
-                <input type="text" name="item_links[]" placeholder="Item link (optional)">
-                <select name="item_category[]">
-                    <option value="">Select Category</option>
-                    <option>Clothing</option>
-                    <option>Accessories</option>
-                    <option>Electronics</option>
-                    <option>Home & Living</option>
-                    <option>Beauty</option>
-                    <option>Others</option>
-                </select>
-                <input type="text" name="item_sku[]" placeholder="SKU / Item code">
-                <input type="number" name="item_stock[]" placeholder="Stock quantity" min="0">
-                <select name="item_status[]">
-                    <option value="Available">Available</option>
-                    <option value="Out of Stock">Out of Stock</option>
-                    <option value="Archived">Archived</option>
-                </select>
-                <textarea name="item_descriptions[]" placeholder="Description"></textarea>
-                <div class="copy-btns">
-                    <button type="button" onclick="copyDetails(this)">Copy</button>
-                    <button type="button" onclick="pasteDetails(this)">Paste</button>
-                </div>
-            `;
-            previewContainer.appendChild(card);
-        };
-        reader.readAsDataURL(file);
+    function attachHeaderControls(){
+      const headers = thead.querySelectorAll('th');
+      headers.forEach(th=>{
+        const existing = th.querySelector('.col-actions');
+        if(existing) existing.remove();
+        const actions = document.createElement('div');
+        actions.className = 'col-actions';
+        const editBtn = document.createElement('button');
+        editBtn.className = 'ghost';
+        editBtn.innerText = 'Edit';
+        editBtn.onclick = ()=>{
+          const newName = prompt('Header name', th.innerText);
+          if(newName!=null){ th.innerText = newName; saveToLocal(); }
+        }
+        actions.appendChild(editBtn);
+        th.appendChild(actions);
+      });
+    }
+
+    document.getElementById('addRowBtn').addEventListener('click', ()=> addRow(true));
+    document.getElementById('addColBtn').addEventListener('click', ()=>{
+      const name = prompt('New column header (e.g. "Inspector")');
+      if(name!=null) addColumn(name.trim()||'New Column');
     });
-}
-
-// Choose multiple files
-photoInput.addEventListener('change', function() {
-    const newFiles = Array.from(this.files);
-    allFiles = allFiles.concat(newFiles);
-    renderCards();
-});
-
-// Capture from camera
-openCamera.addEventListener('click', () => cameraInput.click());
-cameraInput.addEventListener('change', function() {
-    const newFiles = Array.from(this.files);
-    allFiles = allFiles.concat(newFiles);
-    renderCards();
-});
-
-// Remove item
-function removeItem(index) {
-    allFiles.splice(index, 1);
-    renderCards();
-}
-
-// Copy / Paste details
-function copyDetails(button) {
-    const card = button.closest('.item-card');
-    copiedData = {};
-    card.querySelectorAll('input, select, textarea').forEach(input => {
-        if (input.name && input.type !== 'hidden') copiedData[input.name] = input.value;
+    document.getElementById('deleteColBtn').addEventListener('click', deleteLastColumn);
+    document.getElementById('exportCsvBtn').addEventListener('click', exportCSV);
+    document.getElementById('printBtn').addEventListener('click', printPDF);
+    document.getElementById('saveImgBtn').addEventListener('click', saveAsImage);
+    document.getElementById('resetBtn').addEventListener('click', ()=>{
+      if(confirm('Reset table to original sample (this will clear unsaved edits)?')){
+        localStorage.removeItem('landscape_report_html');
+        location.reload();
+      }
     });
-    alert('Item details copied!');
-}
 
-function pasteDetails(button) {
-    if (!Object.keys(copiedData).length) return alert('No data copied!');
-    const card = button.closest('.item-card');
-    card.querySelectorAll('input, select, textarea').forEach(input => {
-        if (copiedData[input.name] !== undefined) input.value = copiedData[input.name];
-    });
-    alert('Item details pasted!');
-}
-
-// Include all files in form submit
-document.getElementById('itemForm').addEventListener('submit', e => {
-    const dataTransfer = new DataTransfer();
-    allFiles.forEach(f => dataTransfer.items.add(f));
-    photoInput.files = dataTransfer.files;
-});
-</script>
-</body>
+    document.addEventListener('input', (e)=>{ if(e.target.tagName==='TD') saveToLocal(); });
+    attachHeaderControls();
+  </script></body>
 </html>
